@@ -9,10 +9,21 @@ export const generateCoverLetter = async (
   const apiKey = useApiKeyStore.getState().apiKey;
   if (!apiKey) throw new Error("API key not found");
 
-  const openai = new OpenAI({
+  let openai;
+
+  if(apiKey?.startsWith("sk-")){
+    openai = new OpenAI({
     apiKey,
     dangerouslyAllowBrowser: true,
   });
+  } else {
+    openai = new OpenAI({
+    apiKey,
+    dangerouslyAllowBrowser: true,
+    baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
+  });
+  }
+ 
 
   const prompt = `You are a professional writer who is an expert at writing cover letters for jobs.
     Create a professional cover letter in ${
@@ -54,7 +65,7 @@ export const generateCoverLetter = async (
 
   try {
     const response = await openai.chat.completions.create({
-      model: "gpt-4o-mini",
+      model: apiKey?.startsWith("sk-") ? "gpt-4o-mini" : "gemini-2.0-flash",
       messages: [{ role: "user", content: prompt }],
     });
 
