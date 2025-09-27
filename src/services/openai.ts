@@ -19,7 +19,7 @@ export const generateCoverLetter = async (
   } else {
     openai = new OpenAI({
     apiKey,
-    dangerouslyAllowBrowser: true,
+    // dangerouslyAllowBrowser: true,
     baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
   });
   }
