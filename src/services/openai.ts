@@ -21,6 +21,16 @@ export const generateCoverLetter = async (
     apiKey,
     dangerouslyAllowBrowser: true,
     baseURL: "https://generativelanguage.googleapis.com/v1beta/openai/",
+      defaultHeaders: {
+    'x-stainless-arch': null,
+    'x-stainless-lang': null,
+    'x-stainless-os': null,
+    'x-stainless-package-version': null,
+    'x-stainless-retry-count': null,
+    'x-stainless-runtime': null,
+    'x-stainless-runtime-version': null,
+    'x-stainless-timeout': null,
+  }
   });
   }
  
