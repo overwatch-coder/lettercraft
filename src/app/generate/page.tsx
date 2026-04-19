@@ -212,6 +212,10 @@ export default function GeneratePage() {
             <CoverLetterForm
               onStageChange={setStage}
               onSubmit={handleGenerate}
+              onClear={() => {
+                if (latestLetter) removeCoverLetter(latestLetter.id);
+                setDraftContent("");
+              }}
               busy={busy}
               generated={Boolean(latestLetter)}
             />
