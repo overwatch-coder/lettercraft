@@ -49,7 +49,7 @@ export default function GeneratePage() {
   }, [hydrate]);
 
   const latestLetter = useMemo(
-    () => coverLetters[coverLetters.length - 1],
+    () => coverLetters[0],
     [coverLetters]
   );
 
