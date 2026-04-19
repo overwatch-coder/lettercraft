@@ -49,7 +49,7 @@ export default function GeneratePage() {
   }, [hydrate]);
 
   const latestLetter = useMemo(
-    () => coverLetters[coverLetters.length - 1],
+    () => coverLetters[0],
     [coverLetters]
   );
 
@@ -212,6 +212,10 @@ export default function GeneratePage() {
             <CoverLetterForm
               onStageChange={setStage}
               onSubmit={handleGenerate}
+              onClear={() => {
+                if (latestLetter) removeCoverLetter(latestLetter.id);
+                setDraftContent("");
+              }}
               busy={busy}
               generated={Boolean(latestLetter)}
             />

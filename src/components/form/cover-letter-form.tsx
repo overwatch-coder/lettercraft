@@ -27,11 +27,13 @@ const DEFAULT_VALUES: Partial<CoverLetterFormData> = {
 export function CoverLetterForm({
   onSubmit,
   onStageChange,
+  onClear,
   busy,
   generated,
 }: {
   onSubmit: (data: CoverLetterFormData) => Promise<void>;
   onStageChange: (stage: 1 | 2 | 3) => void;
+  onClear?: () => void;
   busy: boolean;
   generated?: boolean;
 }) {
@@ -49,6 +51,7 @@ export function CoverLetterForm({
     setJobUrl("");
     setAdvancedOpen(false);
     onStageChange(1);
+    onClear?.();
     toast.success("Form cleared");
   }
 
