@@ -1,16 +1,17 @@
 "use client";
 
-import { LayoutDashboard, FileText, UserCircle, BarChart3, PanelLeftClose, PanelLeftOpen, X } from "lucide-react";
+import { LayoutDashboard, FileText, UserCircle, BarChart3, Settings, PanelLeftClose, PanelLeftOpen, X } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
-export type DashboardView = "overview" | "letters" | "resumes" | "analytics";
+export type DashboardView = "overview" | "letters" | "resumes" | "analytics" | "settings";
 
 const NAV_ITEMS: { id: DashboardView; label: string; icon: React.ElementType }[] = [
   { id: "overview", label: "Overview", icon: LayoutDashboard },
   { id: "letters", label: "Letters", icon: FileText },
   { id: "resumes", label: "Resumes", icon: UserCircle },
   { id: "analytics", label: "Analytics", icon: BarChart3 },
+  { id: "settings", label: "Settings", icon: Settings },
 ];
 
 interface DashboardSidebarProps {

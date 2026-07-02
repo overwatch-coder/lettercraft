@@ -7,6 +7,7 @@ import { OverviewView } from "@/components/dashboard/overview-view";
 import { LettersView } from "@/components/dashboard/letters-view";
 import { ResumesView } from "@/components/dashboard/resumes-view";
 import { AnalyticsCharts } from "@/components/dashboard/analytics-charts";
+import { SettingsView } from "@/components/dashboard/settings-view";
 import { Button } from "@/components/ui/button";
 import { Menu } from "lucide-react";
 
@@ -49,6 +50,7 @@ export default function DashboardPage() {
           {activeView === "letters" && <LettersView />}
           {activeView === "resumes" && <ResumesView />}
           {activeView === "analytics" && <AnalyticsCharts letters={coverLetters} />}
+          {activeView === "settings" && <SettingsView />}
         </div>
       </div>
     </div>

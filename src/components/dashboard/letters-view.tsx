@@ -5,34 +5,32 @@ import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { useAppStore } from "@/lib/store";
 import { format } from "date-fns";
-import { computeAtsScore } from "@/lib/ats";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { FileText, Trash2, Eye, EyeOff } from "lucide-react";
 import { LetterDetailPanel } from "./letter-detail-panel";
 import type { CoverLetter } from "@/lib/types";
 import { cn } from "@/lib/utils";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 export function LettersView() {
   const { coverLetters, removeCoverLetter } = useAppStore();
-  const [selected, setSelected] = useState<CoverLetter | null>(null);
+  const [selectedId, setSelectedId] = useState<string | null>(null);
 
   function toggleSelect(letter: CoverLetter) {
-    setSelected((prev) => (prev?.id === letter.id ? null : letter));
+    setSelectedId((prev) => (prev === letter.id ? null : letter.id));
   }
 
-  function AtsChip({ score }: { score: number }) {
-    const color =
-      score >= 70
-        ? "bg-green-500/10 text-green-600 dark:text-green-400"
-        : score >= 45
-          ? "bg-yellow-500/10 text-yellow-600 dark:text-yellow-400"
-          : "bg-red-500/10 text-red-600 dark:text-red-400";
-    return (
-      <span className={cn("rounded-md px-2 py-0.5 text-xs font-semibold", color)}>
-        {score}% ATS
-      </span>
-    );
-  }
+
 
   return (
     <div className="space-y-6">
@@ -54,8 +52,7 @@ export function LettersView() {
       ) : (
         <div className="space-y-3">
           {coverLetters.map((letter) => {
-            const ats = computeAtsScore(letter.jobDescription, letter.content);
-            const isOpen = selected?.id === letter.id;
+            const isOpen = selectedId === letter.id;
             return (
               <div key={letter.id} className="space-y-2">
                 <Card
@@ -73,7 +70,6 @@ export function LettersView() {
                         {format(new Date(letter.timestamp), "MMM d, yyyy")}
                       </p>
                     </div>
-                    <AtsChip score={ats} />
                   </div>
 
                   <div className="mt-3 flex flex-wrap gap-2">
@@ -101,26 +97,46 @@ export function LettersView() {
                     >
                       Copy
                     </Button>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      className="gap-1.5 text-destructive hover:bg-destructive/10 hover:text-destructive ml-auto"
-                      onClick={() => {
-                        if (isOpen) setSelected(null);
-                        removeCoverLetter(letter.id);
-                        toast.success("Letter deleted");
-                      }}
-                    >
-                      <Trash2 className="h-3.5 w-3.5" />
-                      Delete
-                    </Button>
+                    <AlertDialog>
+                      <AlertDialogTrigger asChild>
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="gap-1.5 text-destructive hover:bg-destructive/10 hover:text-destructive ml-auto"
+                        >
+                          <Trash2 className="h-3.5 w-3.5" />
+                          Delete
+                        </Button>
+                      </AlertDialogTrigger>
+                      <AlertDialogContent>
+                        <AlertDialogHeader>
+                          <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                          <AlertDialogDescription>
+                            This will permanently delete the cover letter for &quot;{letter.title}&quot;. This action cannot be undone.
+                          </AlertDialogDescription>
+                        </AlertDialogHeader>
+                        <AlertDialogFooter>
+                          <AlertDialogCancel>Cancel</AlertDialogCancel>
+                          <AlertDialogAction
+                            onClick={() => {
+                              if (isOpen) setSelectedId(null);
+                              removeCoverLetter(letter.id);
+                              toast.success("Letter deleted");
+                            }}
+                            className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                          >
+                            Delete
+                          </AlertDialogAction>
+                        </AlertDialogFooter>
+                      </AlertDialogContent>
+                    </AlertDialog>
                   </div>
                 </Card>
 
                 {isOpen && (
                   <LetterDetailPanel
                     letter={letter}
-                    onClose={() => setSelected(null)}
+                    onClose={() => setSelectedId(null)}
                   />
                 )}
               </div>

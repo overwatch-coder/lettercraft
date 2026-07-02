@@ -60,7 +60,11 @@ export function AnalyticsCharts({ letters }: { letters: CoverLetter[] }) {
               <CartesianGrid stroke="hsl(var(--border))" vertical={false} />
               <XAxis dataKey="name" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} axisLine={false} tickLine={false} />
-              <Tooltip contentStyle={{ background: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", borderRadius: 12 }} />
+              <Tooltip 
+                contentStyle={{ background: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", borderRadius: 12 }} 
+                itemStyle={{ color: "hsl(var(--popover-foreground))" }}
+                labelStyle={{ color: "hsl(var(--popover-foreground))" }}
+              />
               <Bar dataKey="value" radius={[10, 10, 0, 0]} fill="hsl(var(--primary))" />
             </BarChart>
           </ResponsiveContainer>
@@ -77,7 +81,10 @@ export function AnalyticsCharts({ letters }: { letters: CoverLetter[] }) {
                   <Cell key={index} fill={COLORS[index % COLORS.length]} />
                 ))}
               </Pie>
-              <Tooltip contentStyle={{ background: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", borderRadius: 12 }} />
+              <Tooltip 
+                contentStyle={{ background: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", borderRadius: 12 }} 
+                itemStyle={{ color: "hsl(var(--popover-foreground))" }}
+              />
             </PieChart>
           </ResponsiveContainer>
         </ChartShell>
@@ -91,7 +98,11 @@ export function AnalyticsCharts({ letters }: { letters: CoverLetter[] }) {
               <CartesianGrid stroke="hsl(var(--border))" vertical={false} />
               <XAxis dataKey="day" tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} axisLine={false} tickLine={false} />
               <YAxis tick={{ fill: "hsl(var(--muted-foreground))", fontSize: 12 }} axisLine={false} tickLine={false} allowDecimals={false} />
-              <Tooltip contentStyle={{ background: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", borderRadius: 12 }} />
+              <Tooltip 
+                contentStyle={{ background: "hsl(var(--popover))", border: "1px solid hsl(var(--border))", borderRadius: 12 }}
+                itemStyle={{ color: "hsl(var(--popover-foreground))" }}
+                labelStyle={{ color: "hsl(var(--popover-foreground))" }}
+              />
               <Line type="monotone" dataKey="count" stroke="hsl(var(--secondary))" strokeWidth={3} dot={{ fill: "hsl(var(--secondary))", r: 4 }} />
             </LineChart>
           </ResponsiveContainer>

@@ -4,7 +4,7 @@ import React from "react";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useAppStore } from "@/lib/store";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import type { CoverLetter } from "@/lib/types";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
@@ -14,7 +14,7 @@ export function CoverLetterEditor({
 }: {
   letter: CoverLetter;
 }) {
-  const { updateCoverLetter, getApiKey, resumeProfiles, activeProfile } = useAppStore();
+  const { updateCoverLetter, getApiKey, resumeProfiles, activeProfile, activeProvider } = useAppStore();
   const [instructions, setInstructions] = React.useState("");
   const [busy, setBusy] = React.useState(false);
 
@@ -66,12 +66,13 @@ export function CoverLetterEditor({
         return;
       }
 
-      const apiKey = await getApiKey();
+      const apiKey = await getApiKey(activeProvider);
       const response = await fetch("/api/generate", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           apiKey,
+          provider: activeProvider,
           cvContent: resume.content,
           jobTitle: letter.jobTitle,
           companyName: letter.companyName,
@@ -79,6 +80,7 @@ export function CoverLetterEditor({
           description: letter.jobDescription,
           additionalNotes: letter.additionalNotes,
           customInstructions: instructions,
+          existingLetter: letter.content,
           language: letter.language,
           tone: letter.tone,
           model: letter.model,

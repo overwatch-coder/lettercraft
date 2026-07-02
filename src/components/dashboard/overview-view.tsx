@@ -1,14 +1,31 @@
 "use client";
 
-import { useMemo } from "react";
+import { useState, useMemo } from "react";
 import { Card } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
 import { useAppStore } from "@/lib/store";
-import { FileText, Languages, Mic2, UserCircle } from "lucide-react";
+import { FileText, Languages, Mic2, UserCircle, Eye, Trash2 } from "lucide-react";
+import type { CoverLetter } from "@/lib/types";
+import { LetterDetailPanel } from "./letter-detail-panel";
+import { toast } from "sonner";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
 
 const STAT_ICONS = [FileText, Languages, Mic2, UserCircle];
 
 export function OverviewView() {
-  const { coverLetters, resumeProfiles } = useAppStore();
+  const { coverLetters, resumeProfiles, removeCoverLetter } = useAppStore();
+  const [selectedLetterId, setSelectedLetterId] = useState<string | null>(null);
+  const selectedLetter = useMemo(() => coverLetters.find(l => l.id === selectedLetterId) || null, [coverLetters, selectedLetterId]);
 
   const stats = useMemo(() => {
     const languages = new Set(coverLetters.map((l) => l.language));
@@ -60,7 +77,8 @@ export function OverviewView() {
             {coverLetters.slice(0, 5).map((letter) => (
               <div
                 key={letter.id}
-                className="flex items-center justify-between rounded-lg border p-3"
+                className="flex items-center justify-between rounded-lg border p-4 transition-colors hover:bg-muted/50 cursor-pointer"
+                onClick={() => setSelectedLetterId(letter.id)}
               >
                 <div className="min-w-0 flex-1">
                   <p className="truncate font-medium">{letter.title}</p>
@@ -68,13 +86,58 @@ export function OverviewView() {
                     {letter.language} · {letter.tone}
                   </p>
                 </div>
-                <span className="ml-3 shrink-0 text-xs text-muted-foreground">
-                  {new Date(letter.timestamp).toLocaleDateString()}
-                </span>
+                <div className="flex items-center gap-2 shrink-0 ml-3">
+                  <span className="hidden sm:inline-block text-xs text-muted-foreground mr-2">
+                    {new Date(letter.timestamp).toLocaleDateString()}
+                  </span>
+                  <Button variant="ghost" size="icon" onClick={() => setSelectedLetterId(letter.id)} title="Preview">
+                    <Eye className="h-4 w-4" />
+                  </Button>
+
+                  <AlertDialog>
+                    <AlertDialogTrigger asChild>
+                      <Button variant="ghost" size="icon" className="text-destructive hover:text-destructive hover:bg-destructive/10" title="Delete">
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </AlertDialogTrigger>
+                    <AlertDialogContent>
+                      <AlertDialogHeader>
+                        <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+                        <AlertDialogDescription>
+                          This will permanently delete the cover letter for &quot;{letter.title}&quot;. This action cannot be undone.
+                        </AlertDialogDescription>
+                      </AlertDialogHeader>
+                      <AlertDialogFooter>
+                        <AlertDialogCancel>Cancel</AlertDialogCancel>
+                        <AlertDialogAction
+                          onClick={() => {
+                            if (selectedLetterId === letter.id) setSelectedLetterId(null);
+                            removeCoverLetter(letter.id);
+                            toast.success("Letter deleted");
+                          }}
+                          className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+                        >
+                          Delete
+                        </AlertDialogAction>
+                      </AlertDialogFooter>
+                    </AlertDialogContent>
+                  </AlertDialog>
+                </div>
               </div>
             ))}
           </div>
         </Card>
+      )}
+
+      {selectedLetter && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-sm p-4 sm:p-6">
+          <div className="w-full max-w-4xl shadow-xl max-h-full overflow-hidden flex flex-col">
+            <LetterDetailPanel
+              letter={selectedLetter}
+              onClose={() => setSelectedLetterId(null)}
+            />
+          </div>
+        </div>
       )}
     </div>
   );

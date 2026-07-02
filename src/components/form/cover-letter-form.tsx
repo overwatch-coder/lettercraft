@@ -5,7 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { coverLetterFormSchema, type CoverLetterFormData } from "@/lib/types";
 import { useAppStore } from "@/lib/store";
-import toast from "react-hot-toast";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -15,7 +15,6 @@ import { Link2, Loader2, Sparkles, RotateCcw } from "lucide-react";
 const DEFAULT_VALUES: Partial<CoverLetterFormData> = {
   language: "English",
   tone: "professional",
-  model: "gpt-4o-mini",
   customInstructions: "",
   jobTitle: "",
   companyName: "",
@@ -40,7 +39,7 @@ export function CoverLetterForm({
   const [advancedOpen, setAdvancedOpen] = useState(false);
   const [jobUrl, setJobUrl] = useState("");
   const [fetching, setFetching] = useState(false);
-  const { activeProfile, getApiKey } = useAppStore();
+  const { activeProvider, getApiKey, providerModels, activeProfile } = useAppStore();
   const { register, handleSubmit, setValue, watch, reset } = useForm<CoverLetterFormData>({
     resolver: zodResolver(coverLetterFormSchema),
     defaultValues: DEFAULT_VALUES,
@@ -68,11 +67,12 @@ export function CoverLetterForm({
 
     setFetching(true);
     try {
-      const apiKey = await getApiKey();
+      const apiKey = await getApiKey(activeProvider);
+      const model = providerModels[activeProvider];
       const res = await fetch("/api/scrape-job", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ url: trimmed, apiKey }),
+        body: JSON.stringify({ url: trimmed, apiKey, provider: activeProvider, model }),
       });
 
       if (!res.ok) {
@@ -167,25 +167,6 @@ export function CoverLetterForm({
         </div>
       </div>
 
-      <div className="space-y-1.5">
-        <label className="text-sm font-medium">AI Model</label>
-        <Select
-          value={watch("model")}
-          onValueChange={(value) =>
-            setValue("model", value as CoverLetterFormData["model"], { shouldValidate: true })
-          }
-        >
-          <SelectTrigger>
-            <SelectValue placeholder="Select model" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="gpt-4o-mini">GPT-4o mini</SelectItem>
-            <SelectItem value="gpt-4o">GPT-4o</SelectItem>
-            <SelectItem value="gemini-2.0-flash">Gemini 2.0 Flash</SelectItem>
-            <SelectItem value="gemini-1.5-pro">Gemini 1.5 Pro</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
 
       <div className="space-y-1.5">
         <label htmlFor="description" className="text-sm font-medium">
